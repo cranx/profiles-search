@@ -1,67 +1,62 @@
 import profiles from '~/data/users.json'
 
-const foundProfiles = {
-  groupedByFields: {
-    name: null,
-    title: null,
-    email: null,
-    address: null,
-  },
+let profilesMap = {}
+let isPrevSearchingCompleted = true
 
-  total: 0,
+export const state = () => {
+  if (process.client) {
+    // console.time('mapping')
+    profilesMap = profiles.reduce((result, profile, id) => {
+      profile.id = id
+      result[id] = profile
+      return result
+    }, {})
+    // console.timeEnd('mapping')
+  }
+
+  return {
+    suitableProfilesMap: {},
+    foundProfilesIds: null,
+  }
 }
-
-export const state = () => ({
-  suitableProfilesMap: {},
-  foundProfiles,
-})
 
 export const actions = {
   searchProfiles({ commit }, query) {
-    console.time('search')
-    const foundProfiles = {
-      groupedByFields: {
-        name: [],
-        title: [],
-        email: [],
-        address: [],
-      },
-      total: 0,
+    // const ts = Date.now()
+
+    commit('clearFoundProfiles')
+
+    if (!isPrevSearchingCompleted) {
+      this.$worker.terminate()
     }
 
-    profiles.forEach((user) => {
-      if (user.name.includes(query)) {
-        foundProfiles.total++
-        foundProfiles.groupedByFields.name.push(user)
-        return
-      }
+    isPrevSearchingCompleted = false
 
-      if (user.title.includes(query)) {
-        foundProfiles.total++
-        foundProfiles.groupedByFields.title.push(user)
-        return
-      }
-
-      if (user.email.includes(query)) {
-        foundProfiles.total++
-        foundProfiles.groupedByFields.email.push(user)
-        return
-      }
-
-      if (user.address.includes(query)) {
-        foundProfiles.total++
-        foundProfiles.groupedByFields.address.push(user)
-      }
-    })
-
-    commit('setFoundProfiles', foundProfiles)
-    console.timeEnd('search')
+    const worker = this.$worker.get()
+    worker.addEventListener(
+      'message',
+      ({ data }) => {
+        if (data.action === 'results') {
+          isPrevSearchingCompleted = true
+          commit('setFoundProfilesIds', data.results)
+          // console.log('search', Date.now() - ts, query)
+        }
+      },
+      { once: true }
+    )
+    worker.postMessage({ action: 'search', query })
   },
 }
 
 export const getters = {
   getProfileSuitability({ suitableProfilesMap }) {
     return (id) => !!suitableProfilesMap[id]
+  },
+
+  foundProfiles({ foundProfilesIds }) {
+    return foundProfilesIds?.map((id) => {
+      return profilesMap[id]
+    })
   },
 }
 
@@ -75,11 +70,10 @@ export const mutations = {
   },
 
   clearFoundProfiles(state) {
-    state.foundProfiles = foundProfiles
+    state.foundProfilesIds = null
   },
 
-  setFoundProfiles(state, payload = null) {
-    console.log('setFoundProfiles')
-    state.foundProfiles = payload
+  setFoundProfilesIds(state, payload = null) {
+    state.foundProfilesIds = payload
   },
 }

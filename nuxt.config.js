@@ -25,7 +25,7 @@ export default {
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: '~/plugins/search-worker/plugin.js', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -50,11 +50,33 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    hotMiddleware: {
+      client: {
+        // turn off client overlay when errors are present
+        overlay: false,
+      },
+    },
+
     extend(config, ctx) {
       if (ctx.isClient) {
         config.module.rules.push({
           test: /\.worker\.js$/,
-          loader: 'worker-loader',
+          use: [
+            { loader: 'worker-loader' },
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: [
+                  [
+                    '@nuxt/babel-preset-app',
+                    {
+                      corejs: { version: 3 },
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
           exclude: /(node_modules)/,
         })
       }

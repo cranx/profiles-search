@@ -1,6 +1,6 @@
 <template>
   <div class="search-page">
-    <div class="search-page__field">
+    <label for="search" class="search-page__field">
       <img
         src="~/assets/icons/search.svg"
         alt="search"
@@ -10,24 +10,37 @@
       <input
         id="search"
         v-model="query"
-        placeholder="Enter at least 2 characters"
+        :placeholder="placeholder"
         type="text"
         @input="onQueryChange"
       />
-    </div>
+    </label>
 
     <div class="search-page__results">
-      <Loader />
+      <Loader v-if="isLoading" />
+      <div
+        v-else-if="foundProfiles && !foundProfiles.length"
+        class="search-page__no-results"
+      >
+        No results
+      </div>
+      <template v-else>
+        <ProfileCard
+          v-for="profile in foundProfiles"
+          :key="profile.id"
+          :profile="profile"
+        />
+      </template>
     </div>
   </div>
 </template>
 
 <script>
 import debounce from 'debounce'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { MINIMUM_CHARACTERS } from '~/utils/constants'
 
 const DEBOUNCE_WAITING_TIME = 200
-const MINIMUM_CHARACTERS = 2
 
 export default {
   name: 'SearchPage',
@@ -35,21 +48,32 @@ export default {
   data() {
     return {
       query: '',
+      placeholder: `Enter at least ${MINIMUM_CHARACTERS} characters`,
     }
   },
 
   computed: {
-    ...mapState(['foundProfiles']),
+    ...mapGetters(['foundProfiles']),
+
+    isLoading() {
+      return this.query.length >= MINIMUM_CHARACTERS && !this.foundProfiles
+    },
   },
 
   mounted() {
-    console.log('loaders', this.$route)
+    window.requestAnimationFrame(this.$worker.create)
+  },
+
+  beforeDestroy() {
+    this.$worker.terminate()
   },
 
   methods: {
     ...mapActions(['searchProfiles']),
+    ...mapMutations(['clearFoundProfiles']),
 
     onQueryChange() {
+      this.clearFoundProfiles()
       this.debouncedSearch()
     },
 
@@ -69,7 +93,8 @@ export default {
   margin: 0 auto;
   padding: 19px 12px 0;
   background: #fff;
-  will-change: auto;
+  will-change: content;
+  overflow: auto;
 
   &__field {
     height: 48px;
@@ -87,6 +112,7 @@ export default {
       line-height: 29px;
       border-radius: 2px;
       outline: none;
+      min-width: auto;
 
       &::placeholder {
         font-size: 18px;
@@ -97,6 +123,12 @@ export default {
 
   &__results {
     padding-top: 20px;
+  }
+
+  &__no-results {
+    padding-bottom: 20px;
+    text-align: center;
+    color: #888;
   }
 
   @media (min-width: $breakpointTablet) {
