@@ -17,20 +17,25 @@
     </label>
 
     <div class="search-page__results">
-      <Loader v-if="isLoading" />
+      <RecycleScroller
+        v-if="foundProfiles && foundProfiles.length"
+        v-slot="{ item }"
+        :items="foundProfiles"
+        :item-size="itemHeight"
+        key-field="id"
+        class="search-page__virtual-list"
+      >
+        <ProfileCard :profile="item" />
+      </RecycleScroller>
+
+      <Loader v-else-if="isLoading" />
+
       <div
         v-else-if="foundProfiles && !foundProfiles.length"
         class="search-page__no-results"
       >
         No results
       </div>
-      <template v-else>
-        <ProfileCard
-          v-for="profile in foundProfiles"
-          :key="profile.id"
-          :profile="profile"
-        />
-      </template>
     </div>
   </div>
 </template>
@@ -38,17 +43,25 @@
 <script>
 import debounce from 'debounce'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { RecycleScroller } from 'vue-virtual-scroller'
 import { MINIMUM_CHARACTERS } from '~/utils/constants'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 const DEBOUNCE_WAITING_TIME = 200
+const ITEM_HEIGHT = 156
 
 export default {
   name: 'SearchPage',
+
+  components: {
+    RecycleScroller,
+  },
 
   data() {
     return {
       query: '',
       placeholder: `Enter at least ${MINIMUM_CHARACTERS} characters`,
+      itemHeight: ITEM_HEIGHT,
     }
   },
 
@@ -87,6 +100,8 @@ export default {
 </script>
 
 <style lang="scss">
+$searchFieldHeight: 87px;
+
 .search-page {
   max-width: 564px;
   max-height: 100vh;
@@ -94,7 +109,7 @@ export default {
   padding: 19px 12px 0;
   background: #fff;
   will-change: content;
-  overflow: auto;
+  //overflow: auto;
 
   &__field {
     height: 48px;
@@ -112,13 +127,17 @@ export default {
       line-height: 29px;
       border-radius: 2px;
       outline: none;
-      min-width: auto;
+      min-width: 200px;
 
       &::placeholder {
         font-size: 18px;
         font-weight: normal;
       }
     }
+  }
+
+  &__virtual-list {
+    max-height: calc(100vh - #{$searchFieldHeight});
   }
 
   &__results {
@@ -138,6 +157,12 @@ export default {
     margin-top: $marginTop;
     margin-bottom: $marginBottom;
     max-height: calc(100vh - #{$marginTop} - #{$marginBottom});
+
+    &__virtual-list {
+      max-height: calc(
+        100vh - #{$marginTop} - #{$marginBottom} - #{$searchFieldHeight}
+      );
+    }
   }
 }
 </style>

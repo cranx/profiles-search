@@ -22,7 +22,7 @@ export const state = () => {
 
 export const actions = {
   searchProfiles({ commit }, query) {
-    // const ts = Date.now()
+    const ts = Date.now()
 
     commit('clearFoundProfiles')
 
@@ -39,7 +39,7 @@ export const actions = {
         if (data.action === 'results') {
           isPrevSearchingCompleted = true
           commit('setFoundProfilesIds', data.results)
-          // console.log('search', Date.now() - ts, query)
+          console.log('search', Date.now() - ts, query)
         }
       },
       { once: true }
