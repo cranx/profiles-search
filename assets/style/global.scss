@@ -1,0 +1,14 @@
+@import 'vars';
+@import 'font';
+
+html, body {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  background: #eee;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
