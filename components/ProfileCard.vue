@@ -202,7 +202,7 @@ export default {
   }
 
   &__top {
-    width: 100%;
+    width: 99.99%; // for fixing flex-wrap in IE11
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
