@@ -2,25 +2,36 @@
   <article class="profile-card" :class="{ 'is-suitable': isSuitable }">
     <div class="profile-card__image">
       <picture v-if="shouldLoadImage" v-show="isImageLoaded">
+        <source
+          :srcset="`${avatarMobile}, ${avatarX1} 2x`"
+          media="(max-width: 768px)"
+        />
         <source :srcset="`${avatarX1}, ${profile.avatar} 2x`" />
         <img :src="avatarX1" :alt="profile.name" @load="onImageLoaded" />
       </picture>
-      <Loader v-if="!isImageLoaded" />
+      <Loader v-if="!isImageLoaded" is-small />
     </div>
     <div class="profile-card__main">
       <address>
         <div class="profile-card__top">
-          <h3 class="profile-card__name">{{ profile.name }}</h3>
-          <a class="profile-card__email" :href="`mailto:${profile.email}`">{{
-            profile.email
-          }}</a>
+          <h3
+            class="profile-card__name"
+            v-html="highlightQuery(profile.name)"
+          />
+          <a
+            class="profile-card__email"
+            :href="`mailto:${profile.email}`"
+            v-html="highlightQuery(profile.email)"
+          />
         </div>
-        <div class="profile-card__title">
-          {{ profile.title }}
-        </div>
-        <div class="profile-card__address">
-          {{ profile.address }}
-        </div>
+        <div
+          class="profile-card__title"
+          v-html="highlightQuery(profile.title)"
+        />
+        <div
+          class="profile-card__address"
+          v-html="highlightQuery(profile.address)"
+        />
       </address>
 
       <div class="profile-card__bottom">
@@ -43,6 +54,11 @@ export default {
       type: Object,
       required: true,
     },
+
+    query: {
+      type: String,
+      default: null,
+    },
   },
 
   data() {
@@ -62,6 +78,11 @@ export default {
     avatarX1() {
       // todo: set it in source json
       return this.profile.avatar?.replace('size=300x300', 'size=150x150')
+    },
+
+    avatarMobile() {
+      // todo: set it in source json
+      return this.profile.avatar?.replace('size=300x300', 'size=64x64')
     },
 
     buttonText() {
@@ -105,6 +126,14 @@ export default {
     onButtonClick() {
       this.toggleProfileSuitability(this.profile.id)
     },
+
+    highlightQuery(field) {
+      if (!this.query?.length) {
+        return field
+      }
+
+      return field.replaceAll(new RegExp(this.query, 'ig'), `<mark>$&</mark>`)
+    },
   },
 }
 </script>
@@ -121,12 +150,14 @@ export default {
   overflow: hidden;
 
   &__image {
-    min-width: 134px;
-    max-width: 134px;
-    min-height: 136px;
     display: flex;
     align-items: center;
     background: rgba(0, 0, 0, 0.25);
+    min-width: 64px;
+    max-width: 64px;
+    height: 64px;
+    border-radius: 3px;
+    margin: 12px 0 12px 12px;
 
     picture {
       width: 100%;
@@ -140,17 +171,17 @@ export default {
     }
 
     .loader {
-      margin-top: 22px;
+      margin-top: 25px;
     }
   }
 
   &__main {
     padding: 10px 0 18px 0;
     flex-grow: 1;
+    margin-left: 12px;
 
-    > address {
+    address {
       font-style: normal;
-      margin-left: 26px;
       margin-right: 9px;
     }
   }
@@ -159,7 +190,7 @@ export default {
     margin: 0 8px 0 0;
     padding: 0;
     font-weight: normal;
-    font-size: 24px;
+    font-size: 20px;
     line-height: 32px;
   }
 
@@ -179,9 +210,11 @@ export default {
 
   &__email {
     margin-bottom: 4px;
-    font-size: 14px;
+    font-size: 11px;
     line-height: 16px;
     color: rgba(0, 0, 0, 0.54);
+    text-overflow: ellipsis;
+    max-width: 90%;
   }
 
   &__address {
@@ -197,8 +230,6 @@ export default {
   }
 
   &__button {
-    margin-left: 32px;
-    margin-right: 9px;
     width: 140px;
     border: none;
     padding: 0;
@@ -217,6 +248,10 @@ export default {
     &:hover {
       opacity: 0.7;
     }
+  }
+
+  mark {
+    color: inherit;
   }
 
   &:hover {
@@ -239,6 +274,42 @@ export default {
 
   &.is-suitable::before {
     opacity: 1;
+  }
+
+  @media (min-width: $breakpointTablet) {
+    .loader {
+      margin-top: 22px;
+    }
+
+    &__image {
+      min-width: 134px;
+      max-width: 134px;
+      min-height: 136px;
+      height: auto;
+      margin: 0;
+      border-radius: 0;
+    }
+
+    &__main {
+      margin-left: 12px;
+
+      address {
+        margin-left: 26px;
+      }
+    }
+
+    &__button {
+      margin-left: 32px;
+    }
+
+    &__email {
+      font-size: 14px;
+      max-width: 100%;
+    }
+
+    &__name {
+      font-size: 24px;
+    }
   }
 }
 </style>

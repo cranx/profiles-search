@@ -1,5 +1,5 @@
 <template>
-  <div class="loader">
+  <div class="loader" :class="{ 'is-small': isSmall }">
     <div></div>
     <div></div>
     <div></div>
@@ -10,6 +10,13 @@
 <script>
 export default {
   name: 'Loader',
+
+  props: {
+    isSmall: {
+      type: Boolean,
+      default: false,
+    },
+  },
 }
 </script>
 
@@ -52,6 +59,42 @@ export default {
     }
   }
 
+  &.is-small {
+    width: 40px;
+
+    div {
+      height: 6px;
+      width: 6px;
+
+      &:nth-child(1) {
+        left: 4px;
+      }
+
+      &:nth-child(2) {
+        left: 4px;
+        animation: ellipsis2-small 0.5s infinite;
+      }
+
+      &:nth-child(3) {
+        left: 16px;
+        animation: ellipsis2-small 0.5s infinite;
+      }
+
+      &:nth-child(4) {
+        left: 28px;
+      }
+    }
+  }
+
+  @keyframes ellipsis2-small {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(12px, 0);
+    }
+  }
+
   @keyframes ellipsis1 {
     0% {
       transform: scale(0);
@@ -60,6 +103,7 @@ export default {
       transform: scale(1);
     }
   }
+
   @keyframes ellipsis3 {
     0% {
       transform: scale(1);
@@ -68,6 +112,7 @@ export default {
       transform: scale(0);
     }
   }
+
   @keyframes ellipsis2 {
     0% {
       transform: translate(0, 0);

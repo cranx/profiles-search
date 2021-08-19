@@ -34,7 +34,7 @@
           :size-dependencies="[item.name, item.title, item.email, item.address]"
           class="search-page__virtual-list-item"
         >
-          <ProfileCard :profile="item" />
+          <ProfileCard :profile="item" :query="query" />
         </DynamicScrollerItem>
       </DynamicScroller>
 
@@ -139,7 +139,7 @@ $searchFieldHeight: 87px;
     align-items: center;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
 
-    > input {
+    input {
       margin: 0 10px;
       padding: 0;
       flex-grow: 1;
