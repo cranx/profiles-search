@@ -1,6 +1,6 @@
 {
   "name": "nuxt-profiles-search",
-  "description": "A simple application demonstrating responsive real-time filtering of large lists using a virtual list and a web worker",
+  "description": "A simple application that demonstrates responsive real-time filtering of a large list using a virtual list and a web worker",
   "version": "1.0.0",
   "private": true,
   "scripts": {
