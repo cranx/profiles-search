@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-profiles-search",
+  "name": "profiles-search",
   "description": "A simple application that demonstrates responsive real-time filtering of a large list using a virtual list and a web worker",
   "version": "1.0.0",
   "private": true,

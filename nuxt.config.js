@@ -2,14 +2,19 @@ const isDev = process.env.NODE_ENV === 'development'
 
 export default {
   head: {
-    title: 'nuxt-profiles-search',
+    title: 'Profiles Search',
     htmlAttrs: {
       lang: 'en',
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      {
+        hid: 'description',
+        name: 'description',
+        content:
+          'A simple application that demonstrates responsive real-time filtering of a large list using a virtual list and a web worker',
+      },
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],

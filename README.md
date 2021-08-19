@@ -1,4 +1,6 @@
-# nuxt-profiles-search
+# profiles-search
+
+https://profiles-search.herokuapp.com/
 
 - Mobile-Friendly
 - Supports IE11+
