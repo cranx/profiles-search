@@ -10,6 +10,7 @@
       <input
         id="search"
         v-model="query"
+        ref="input"
         :placeholder="placeholder"
         type="text"
         @input="onQueryChange"
@@ -83,8 +84,16 @@ export default {
     },
   },
 
+  created() {
+    if (this.$route.params.query?.length >= MINIMUM_CHARACTERS) {
+      this.query = this.$route.params.query
+    }
+  },
+
   mounted() {
     this.$nextTick(this.$worker.create)
+
+    this.onQueryChange()
   },
 
   beforeDestroy() {
@@ -103,6 +112,9 @@ export default {
     debouncedSearch: debounce(function () {
       if (this.query.length >= MINIMUM_CHARACTERS) {
         this.searchProfiles(this.query)
+        window.history.replaceState({}, '', `/search/${this.query}`)
+      } else if (!this.query.length) {
+        window.history.replaceState({}, '', '/')
       }
     }, DEBOUNCE_WAITING_TIME),
   },
