@@ -19,6 +19,7 @@ export default {
   position: relative;
   width: 80px;
   height: 35px;
+  will-change: auto;
 
   div {
     position: absolute;
@@ -28,6 +29,7 @@ export default {
     border-radius: 50%;
     background: #888;
     animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    will-change: auto;
 
     &:nth-child(1) {
       left: 8px;

@@ -17,16 +17,25 @@
     </label>
 
     <div class="search-page__results">
-      <RecycleScroller
+      <DynamicScroller
         v-if="foundProfiles && foundProfiles.length"
-        v-slot="{ item }"
+        v-slot="{ item, index, active }"
+        ref="container"
         :items="foundProfiles"
-        :item-size="itemHeight"
+        :min-item-size="itemHeight"
         key-field="id"
         class="search-page__virtual-list"
       >
-        <ProfileCard :profile="item" />
-      </RecycleScroller>
+        <DynamicScrollerItem
+          :active="active"
+          :data-index="index"
+          :item="item"
+          :size-dependencies="[item.name, item.title, item.email, item.address]"
+          class="search-page__virtual-list-item"
+        >
+          <ProfileCard :profile="item" />
+        </DynamicScrollerItem>
+      </DynamicScroller>
 
       <Loader v-else-if="isLoading" />
 
@@ -43,7 +52,7 @@
 <script>
 import debounce from 'debounce'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { RecycleScroller } from 'vue-virtual-scroller'
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import { MINIMUM_CHARACTERS } from '~/utils/constants'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
@@ -54,7 +63,8 @@ export default {
   name: 'SearchPage',
 
   components: {
-    RecycleScroller,
+    DynamicScroller,
+    DynamicScrollerItem,
   },
 
   data() {
@@ -74,7 +84,7 @@ export default {
   },
 
   mounted() {
-    window.requestAnimationFrame(this.$worker.create)
+    this.$nextTick(this.$worker.create)
   },
 
   beforeDestroy() {
@@ -108,8 +118,7 @@ $searchFieldHeight: 87px;
   margin: 0 auto;
   padding: 19px 12px 0;
   background: #fff;
-  will-change: content;
-  //overflow: auto;
+  will-change: auto;
 
   &__field {
     height: 48px;
@@ -138,6 +147,10 @@ $searchFieldHeight: 87px;
 
   &__virtual-list {
     max-height: calc(100vh - #{$searchFieldHeight});
+
+    &-item {
+      padding-bottom: 20px;
+    }
   }
 
   &__results {
