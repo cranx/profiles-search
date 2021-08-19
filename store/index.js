@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import profiles from '~/data/users.json'
 
 let profilesMap = {}
@@ -61,11 +62,12 @@ export const getters = {
 }
 
 export const mutations = {
-  toggleProfileSuitability({ suitableProfilesMap }, { id }) {
-    if (!suitableProfilesMap[id]) {
-      suitableProfilesMap[id] = true
+  toggleProfileSuitability(state, id) {
+    if (!state.suitableProfilesMap[id]) {
+      Vue.set(state.suitableProfilesMap, id, true)
     } else {
-      delete suitableProfilesMap[id]
+      Vue.set(state.suitableProfilesMap, id, null)
+      delete state.suitableProfilesMap[id]
     }
   },
 

@@ -1,6 +1,6 @@
 <template>
-  <article class="profile-card">
-    <div :key="profile.id" class="profile-card__image">
+  <article class="profile-card" :class="{ 'is-suitable': isSuitable }">
+    <div class="profile-card__image">
       <picture v-if="shouldLoadImage" v-show="isImageLoaded">
         <source :srcset="`${avatarX1}, ${profile.avatar} 2x`" />
         <img :src="avatarX1" :alt="profile.name" @load="onImageLoaded" />
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'ProfileCard',
@@ -56,7 +56,7 @@ export default {
     ...mapGetters(['getProfileSuitability']),
 
     isSuitable() {
-      return this.getProfileSuitability(this.profile.id)
+      return this.$store.getters.getProfileSuitability(this.profile.id)
     },
 
     avatarX1() {
@@ -70,7 +70,7 @@ export default {
   },
 
   watch: {
-    'profile.id': {
+    'profile.avatar': {
       handler() {
         const IMAGE_LOADING_DELAY = 300
 
@@ -96,21 +96,29 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['toggleProfileSuitability']),
+
     onImageLoaded() {
       this.isImageLoaded = true
     },
 
-    onButtonClick() {},
+    onButtonClick() {
+      this.toggleProfileSuitability(this.profile.id)
+    },
   },
 }
 </script>
 
 <style lang="scss">
 .profile-card {
+  position: relative;
   min-height: 136px;
   background: #fafafa;
   display: flex;
   transition: background-color 0.2s ease-in-out;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
+  border-radius: 3px;
+  overflow: hidden;
 
   &__image {
     min-width: 134px;
@@ -120,11 +128,15 @@ export default {
     align-items: center;
     background: rgba(0, 0, 0, 0.25);
 
-    img,
     picture {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    img {
+      width: 100%;
     }
 
     .loader {
@@ -133,7 +145,7 @@ export default {
   }
 
   &__main {
-    padding: 10px 0 19px 0;
+    padding: 10px 0 18px 0;
     flex-grow: 1;
 
     > address {
@@ -174,12 +186,9 @@ export default {
 
   &__address {
     font-size: 14px;
-    line-height: 22px;
+    line-height: 20px;
+    margin-bottom: 2px;
     color: rgba(0, 0, 0, 0.543846);
-  }
-
-  &:hover {
-    background: #f0f0f0;
   }
 
   &__bottom {
@@ -201,6 +210,35 @@ export default {
     color: #009688;
     background: transparent;
     cursor: pointer;
+    outline: none;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  &:hover {
+    background: #f0f0f0;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    border: 1px solid #4765ff;
+    border-radius: inherit;
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+  }
+
+  &.is-suitable::before {
+    opacity: 1;
   }
 }
 </style>
