@@ -10,6 +10,7 @@
       <input
         id="search"
         ref="input"
+        :value="query"
         :placeholder="placeholder"
         type="text"
         @input="onQueryChange"

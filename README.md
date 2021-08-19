@@ -1,5 +1,8 @@
 # nuxt-profiles-search
 
+- Mobile-Friendly
+- Supports IE11+
+
 ## Build Setup
 
 ```bash
