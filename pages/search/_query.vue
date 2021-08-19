@@ -9,7 +9,6 @@
       />
       <input
         id="search"
-        v-model="query"
         ref="input"
         :placeholder="placeholder"
         type="text"
@@ -104,7 +103,11 @@ export default {
     ...mapActions(['searchProfiles']),
     ...mapMutations(['clearFoundProfiles']),
 
-    onQueryChange() {
+    onQueryChange(event) {
+      if (event) {
+        this.query = event.target?.value || ''
+      }
+
       this.clearFoundProfiles()
       this.debouncedSearch()
     },
