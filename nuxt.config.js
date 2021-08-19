@@ -1,5 +1,6 @@
+const isDev = process.env.NODE_ENV === 'development'
+
 export default {
-  // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'nuxt-profiles-search',
     htmlAttrs: {
@@ -14,9 +15,7 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
-  server: {
-    port: '3001',
-  },
+  modern: !isDev,
 
   css: ['normalize.css/normalize.css'],
 
