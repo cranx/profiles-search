@@ -1,20 +1,7 @@
 import Vue from 'vue'
-import profiles from '~/data/users.json'
-
-let profilesMap = {}
-let isPrevSearchingCompleted = true
+let profilesMap = null
 
 export const state = () => {
-  if (process.client) {
-    // console.time('mapping')
-    profilesMap = profiles.reduce((result, profile, id) => {
-      profile.id = id
-      result[id] = profile
-      return result
-    }, {})
-    // console.timeEnd('mapping')
-  }
-
   return {
     suitableProfilesMap: {},
     foundProfilesIds: null,
@@ -22,30 +9,50 @@ export const state = () => {
 }
 
 export const actions = {
+  async fetchProfiles() {
+    if (profilesMap) {
+      console.log('??')
+      return
+    }
+
+    try {
+      const { data } = await this.$axios.get('/data/users.json')
+
+      profilesMap = data.reduce((result, profile, id) => {
+        profile.id = id
+        result[id] = profile
+        return result
+      }, {})
+
+      const worker = this.$worker.get()
+      worker.postMessage({ action: 'data', payload: data })
+
+      return true
+    } catch (e) {
+      // handle error
+    }
+  },
+
   searchProfiles({ commit }, query) {
-    // const ts = Date.now()
+    if (!profilesMap) {
+      return
+    }
+    const start = Date.now()
+    const worker = this.$worker.get()
 
     commit('clearFoundProfiles')
 
-    if (!isPrevSearchingCompleted) {
-      this.$worker.terminate()
-    }
-
-    isPrevSearchingCompleted = false
-
-    const worker = this.$worker.get()
     worker.addEventListener(
       'message',
       ({ data }) => {
         if (data.action === 'results') {
-          isPrevSearchingCompleted = true
           commit('setFoundProfilesIds', data.results)
-          // console.log('search', Date.now() - ts, query)
+          console.log('search', Date.now() - start, query)
         }
       },
       { once: true }
     )
-    worker.postMessage({ action: 'search', query })
+    worker.postMessage({ action: 'search', payload: query })
   },
 }
 

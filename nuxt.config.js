@@ -53,7 +53,7 @@ export default {
     ],
   },
 
-  modules: ['nuxt-polyfill'],
+  modules: ['nuxt-polyfill', '@nuxtjs/axios'],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {

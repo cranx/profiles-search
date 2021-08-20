@@ -1,10 +1,15 @@
-import profiles from '~/data/users.json'
 import { MINIMUM_CHARACTERS } from '~/utils/constants'
+let profiles = null
 
-self.addEventListener('message', ({ data: { action, query } }) => {
-  query = query.toLowerCase()
-
-  if (action === 'search' && query?.length >= MINIMUM_CHARACTERS) {
+self.addEventListener('message', ({ data: { action, payload } }) => {
+  if (action === 'data' && payload) {
+    profiles = payload
+  } else if (
+    action === 'search' &&
+    profiles &&
+    payload?.length >= MINIMUM_CHARACTERS
+  ) {
+    const query = payload.toLowerCase()
     const foundProfilesIds = []
 
     profiles.forEach((user, id) => {

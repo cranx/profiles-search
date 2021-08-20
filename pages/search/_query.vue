@@ -84,15 +84,14 @@ export default {
     },
   },
 
-  created() {
+  async mounted() {
     if (this.$route.params.query?.length >= MINIMUM_CHARACTERS) {
       this.query = this.$route.params.query
     }
-  },
 
-  mounted() {
-    this.$nextTick(this.$worker.create)
+    this.$worker.create()
 
+    await this.fetchProfiles()
     this.onQueryChange()
   },
 
@@ -101,7 +100,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['searchProfiles']),
+    ...mapActions(['searchProfiles', 'fetchProfiles']),
     ...mapMutations(['clearFoundProfiles']),
 
     onQueryChange(event) {
