@@ -44,6 +44,12 @@ export default {
     'nuxt-compress',
   ],
 
+  modules: ['nuxt-polyfill', '@nuxtjs/axios'],
+
+  axios: {
+    baseURL: process.env.BASE_URL,
+  },
+
   polyfill: {
     features: [
       {
@@ -52,8 +58,6 @@ export default {
       },
     ],
   },
-
-  modules: ['nuxt-polyfill', '@nuxtjs/axios'],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
