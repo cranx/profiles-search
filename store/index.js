@@ -11,7 +11,6 @@ export const state = () => {
 export const actions = {
   async fetchProfiles() {
     if (profilesMap) {
-      console.log('??')
       return
     }
 
@@ -37,7 +36,7 @@ export const actions = {
     if (!profilesMap) {
       return
     }
-    const start = Date.now()
+    // const start = Date.now()
     const worker = this.$worker.get()
 
     commit('clearFoundProfiles')
@@ -47,7 +46,7 @@ export const actions = {
       ({ data }) => {
         if (data.action === 'results') {
           commit('setFoundProfilesIds', data.results)
-          console.log('search', Date.now() - start, query)
+          // console.log('search', Date.now() - start, query)
         }
       },
       { once: true }
