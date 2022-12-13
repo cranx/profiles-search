@@ -1,6 +1,5 @@
-# profiles-search
-
-https://profiles-search.herokuapp.com/
+#### Simple application that demonstrates responsive real-time filtering of a large list using a virtual list and a web worker
+[Demo](https://profiles-search.onrender.com/)
 
 - Mobile-Friendly
 - Supports IE11+
